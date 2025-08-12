@@ -1,9 +1,14 @@
-import React from 'react'
+'use client'
 
-const Home = () => {
+import Dashboard from "@/components/Dashboard";
+import { useState } from "react";
+
+export default function Home() {
+
+  const [input, setInput] = useState('');
   return (
-    <div>Home</div>
-  )
+    <div className="w-full h-fit">
+      <Dashboard/>
+    </div>
+  );
 }
-
-export default Home
