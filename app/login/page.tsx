@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,12 +13,18 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const {user, loading: authLoading} = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  // Redirect if user is already logged in
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   if (!authLoading && user) {
+    toast.success("Logged in successfully!");
     router.push("/");
-    return null; 
+    return null;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,38 +47,60 @@ export default function LoginPage() {
 
   function getFriendlyError(code: string) {
     switch (code) {
-      case "auth/invalid-email": return "Invalid email format.";
-      case "auth/user-not-found": return "No account found for this email.";
-      case "auth/wrong-password": return "Incorrect password.";
-      default: return "Login failed. Please try again.";
+      case "auth/invalid-email":
+        return "Invalid email format.";
+      case "auth/user-not-found":
+        return "No account found for this email.";
+      case "auth/wrong-password":
+        return "Incorrect password.";
+      default:
+        return "Login failed. Please try again.";
     }
   }
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-blue-800 to-indigo-900">
-      <form onSubmit={handleLogin} className="p-6 border rounded-lg w-5/6 sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 bg-gray-200 shadow-lg flex flex-col items-center">
-        <Image src={'/VimasaLogo.png'} width={200} height={100} alt="Vimasa Logo"/>
-        <h1 className="text-2xl font-bold mb-4 text-black text-center">Vimasa Network <br /> Live Score Hub</h1>
-        <h2 className="text-black w-full text-left py-2 text-xl">Log in</h2>
-        {error && <p className="text-red-500 text-sm mb-2 w-full ">{error}</p>}
+    <div className="flex min-h-screen items-center justify-center bg-base-200 px-4">
+      <form
+        onSubmit={handleLogin}
+        className="card w-full max-w-md bg-base-100 shadow-xl p-8 space-y-6"
+      >
+        <div className="flex justify-center mb-4">
+          <Image
+            src={"/VimasaLogo.png"}
+            width={200}
+            height={100}
+            alt="Vimasa Logo"
+            className="object-contain"
+          />
+        </div>
+        <h1 className="text-3xl font-bold text-center text-primary">
+          Vimasa Network
+          <br />
+          Live Score Hub
+        </h1>
+        <h2 className="text-xl font-semibold text-center mt-2">Log in</h2>
+
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full mb-2 rounded border-black text-black"
+          className="input input-bordered w-full"
+          required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full mb-4 rounded border-black text-black"
+          className="input input-bordered w-full"
+          required
         />
+
         <button
           type="submit"
           disabled={loading}
-          className={`bg-blue-500 text-white p-2 w-full rounded ${loading && "opacity-50"}`}
+          className={`btn w-full ${loading ? " btn-disabled	" : "btn-primary"}`}
         >
           {loading ? "Logging in..." : "Login"}
         </button>

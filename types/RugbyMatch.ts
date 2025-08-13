@@ -1,5 +1,6 @@
 
 export interface MatchDoc {
+  tournamentName: string;
   rugbyMatchID: string;
   matchDate: string;
   venue: string;
@@ -63,6 +64,7 @@ export interface rugbyPlayer {
 }
 
 export interface PlayerReplacement {
+    playerName: string | number | readonly string[] | undefined;
     replacementID: number;
     outgoingPlayerID: number;
     incomingPlayerID: number;
