@@ -20,16 +20,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     await verifyAuth(req);
 
+    // Await params before accessing its properties
+    const { id } = await params;
+
     const { data }: { data: Partial<MatchDoc> } = await req.json();
     if (!data) {
       return NextResponse.json({ error: "Missing update data" }, { status: 400 });
     }
 
-    await updateMatch(params.id, data);
+    await updateMatch(id, data);
     return NextResponse.json({ success: true });
 
   } catch (err: any) {
-    console.error(`[PATCH /matches/${params.id}] Error:`, err);
+    console.error(`[PATCH /matches] Error:`, err);
 
     if (err.name === "AuthError") {
       return NextResponse.json({ error: err.message }, { status: 401 });

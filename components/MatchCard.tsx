@@ -138,7 +138,6 @@ const MatchCard = ({ match }: { match: MatchDoc }) => {
   }
 
 </div>
-
   );
 };
 
