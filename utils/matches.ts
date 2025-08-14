@@ -27,6 +27,7 @@ export async function createMatch(match: MatchDoc, state: MatchStateDoc) {
 
     await setDoc(matchRef, {
       ...match,
+      rugbyMatchID: matchId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
