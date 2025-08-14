@@ -1,8 +1,18 @@
+'use client';
+
 import { MatchDoc } from "@/types/RugbyMatch";
 import { Calendar, Delete, Edit, Eye, MapPin } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import MoreInfoModal from "./modals/MoreInfo";
+import EditMatchModal from "./modals/EditMatch";
+import DeleteMatchModal from "./modals/DeleteMatch";
 
 const MatchCard = ({ match }: { match: MatchDoc }) => {
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showMoreInfoModal, setShowMoreInfoModal] = useState(false);
+    
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -35,16 +45,16 @@ const MatchCard = ({ match }: { match: MatchDoc }) => {
     </div>
     <div className="flex gap-2">
       <div className="tooltip tooltip-neutral" data-tip="More Info">
-        <button className="btn btn-ghost btn-circle btn-sm text-info">
+        <button className="btn btn-ghost btn-circle btn-sm text-info" onClick={() => setShowMoreInfoModal(true)}>
           <Eye className="size-4" />
         </button>
       </div>
       <div className="tooltip tooltip-neutral" data-tip="Edit Match">
-        <button className="btn btn-ghost btn-circle btn-sm text-warning">
+        <button className="btn btn-ghost btn-circle btn-sm text-warning" onClick={() => setShowEditModal(true)}>
           <Edit className="size-4" />
         </button>
       </div>
-      <div className="tooltip tooltip-neutral" data-tip="Delete Match">
+      <div className="tooltip tooltip-neutral" data-tip="Delete Match" onClick={() => setShowDeleteModal(true)}>
         <button className="btn btn-ghost btn-circle btn-sm text-error">
           <Delete className="size-4" />
         </button>
@@ -104,6 +114,29 @@ const MatchCard = ({ match }: { match: MatchDoc }) => {
       <p>{match.venue}</p>
     </div>
   </div>
+
+  {/* More info Modal */}
+
+  {
+    showMoreInfoModal && (
+      <MoreInfoModal match={match} isOpen={showMoreInfoModal} setIsOpen={setShowMoreInfoModal} isEditModalOpen={showEditModal} setIsEditModalOpen={setShowEditModal} isDeleteModalOpen={showDeleteModal} setIsDeleteModalOpen={setShowDeleteModal}/>
+    )
+  }
+
+  {/* Edit Match Modal */}
+  {
+    showEditModal && (
+      <EditMatchModal match={match} isOpen={showEditModal} setIsOpen={setShowEditModal} />
+    )
+  }
+
+  {/* Delete Match Modal */}
+  {
+    showDeleteModal && (
+      <DeleteMatchModal match={match} isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} />
+    )
+  }
+
 </div>
 
   );

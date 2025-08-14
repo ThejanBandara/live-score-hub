@@ -5,13 +5,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/utils/firebase";
 import { signOut } from "firebase/auth";
-import { LogOut, Plus, Settings, User, Delete } from "lucide-react";
+import { LogOut, Plus, Settings, User } from "lucide-react";
 import Image from "next/image";
 import {
   MatchDoc,
-  MatchStateDoc,
-  rugbyPlayer,
-  TeamCard,
 } from "@/types/RugbyMatch";
 import toast from "react-hot-toast";
 import MatchCard from "./MatchCard";
