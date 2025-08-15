@@ -8,7 +8,9 @@ import {
   Trophy,
   Clock,
   Star,
+  SquareArrowUpRight,
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const MoreInfoModal = ({
@@ -86,6 +88,11 @@ const MoreInfoModal = ({
             </div>
 
             <div className="flex gap-2">
+
+              <Link href={`/scorekeeper/rugby/${match.rugbyMatchID}`} target="_blank" className="btn btn-info btn-sm gap-2">
+                  <SquareArrowUpRight className="size-4"/>
+                  Open Scorekeeper
+              </Link>
               <div className="tooltip" data-tip="Edit Match">
                 <button
                   className="btn btn-warning btn-sm gap-2"
