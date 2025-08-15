@@ -6,21 +6,31 @@ import { db } from "@/utils/firebase";
 import { doc, onSnapshot, updateDoc, increment } from "firebase/firestore";
 import toast from "react-hot-toast";
 
+// Updated interface for Next.js 15 client components
 interface ScoreKeeperProps {
-  params: { id: string | string[] };
+  params: Promise<{ id: string | string[] }>;
 }
 
 export default function ScoreKeeper({ params }: ScoreKeeperProps) {
-  // Ensure matchId is always a string
-  const matchId = Array.isArray(params.id) ? params.id[0] : params.id;
-  if (!matchId) return <div className="p-4">No match ID provided</div>;
-
+  const [matchId, setMatchId] = useState<string | null>(null);
   const [match, setMatch] = useState<MatchDoc | null>(null);
   const [matchState, setMatchState] = useState<MatchStateDoc | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Handle async params for Next.js 15
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      const id = Array.isArray(resolvedParams.id) ? resolvedParams.id[0] : resolvedParams.id;
+      setMatchId(id);
+    };
+    getParams();
+  }, [params]);
+
   // Fetch match and matchState from Firestore
   useEffect(() => {
+    if (!matchId) return;
+
     const matchRef = doc(db, "matches", matchId);
     const matchStateRef = doc(db, "matchStates", matchId);
 
@@ -38,6 +48,8 @@ export default function ScoreKeeper({ params }: ScoreKeeperProps) {
       unsubState();
     };
   }, [matchId]);
+
+  if (!matchId) return <div className="p-4">No match ID provided</div>;
 
   if (loading || !match || !matchState)
     return (
