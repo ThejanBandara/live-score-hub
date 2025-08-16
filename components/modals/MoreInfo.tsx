@@ -93,6 +93,12 @@ const MoreInfoModal = ({
                   <SquareArrowUpRight className="size-4"/>
                   Open Scorekeeper
               </Link>
+
+              <Link href={`/scoreboard/rugby/${match.rugbyMatchID}`} target="_blank" className="btn btn-info btn-sm gap-2">
+                  <SquareArrowUpRight className="size-4"/>
+                  Open Scoreboard
+              </Link>
+
               <div className="tooltip" data-tip="Edit Match">
                 <button
                   className="btn btn-warning btn-sm gap-2"

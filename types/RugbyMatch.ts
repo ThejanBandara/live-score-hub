@@ -28,6 +28,7 @@ export interface MatchStateDoc {
 
 // Match Logs Collection
 export interface MatchLogDoc {
+  rugbyMatchID: string;
   matchLogID: string;
   minute: number;
   type: "try" | "conversion" | "panelty" | "drop goal" | "yellow card" | "red card" | "player replacement";
