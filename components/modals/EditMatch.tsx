@@ -23,9 +23,6 @@ const EditMatchModal = ({
   const [awayTeamPlayers, setAwayTeamPlayers] = useState<rugbyPlayer[]>([...match.awayTeam.players]);
   const [matchOfficials, setMatchOfficials] = useState<string[]>([...match.matchOfficials]);
   const [matchCommentators, setMatchCommentators] = useState<string[]>([...match.matchCommentators]);
-
-  // Check if editing should be restricted based on match status
-  const isEditingRestricted = match.status === "ended" || match.status === "live";
   
   // Reset form data when match prop changes
   useEffect(() => {
@@ -53,11 +50,6 @@ const EditMatchModal = ({
 
   // Player management functions
   const addHomePlayer = () => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     const newPlayerId = Math.max(0, ...homeTeamPlayers.map(p => p.playerID)) + 1;
     setHomeTeamPlayers((prev) => [
       ...prev,
@@ -74,11 +66,6 @@ const EditMatchModal = ({
   };
 
   const addAwayPlayer = () => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     const newPlayerId = Math.max(0, ...awayTeamPlayers.map(p => p.playerID)) + 1;
     setAwayTeamPlayers((prev) => [
       ...prev,
@@ -98,11 +85,6 @@ const EditMatchModal = ({
     index: number,
     updatedFields: Partial<rugbyPlayer>
   ) => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     setHomeTeamPlayers((prev) => {
       const newPlayers = [...prev];
       newPlayers[index] = { ...newPlayers[index], ...updatedFields };
@@ -114,11 +96,6 @@ const EditMatchModal = ({
     index: number,
     updatedFields: Partial<rugbyPlayer>
   ) => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     setAwayTeamPlayers((prev) => {
       const newPlayers = [...prev];
       newPlayers[index] = { ...newPlayers[index], ...updatedFields };
@@ -127,21 +104,11 @@ const EditMatchModal = ({
   };
 
   const removeHomePlayer = (index: number) => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     setHomeTeamPlayers((prev) => prev.filter((_, i) => i !== index));
     toast("Home player removed");
   };
 
   const removeAwayPlayer = (index: number) => {
-    if (isEditingRestricted) {
-      toast.error("Cannot edit players while match is in progress or completed");
-      return;
-    }
-    
     setAwayTeamPlayers((prev) => prev.filter((_, i) => i !== index));
     toast("Away player removed");
   };
@@ -187,16 +154,6 @@ const EditMatchModal = ({
   // Update match function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (match.status === "ended") {
-      toast.error("Cannot edit a completed match");
-      return;
-    }
-
-    if (match.status === "live") {
-      toast.error("Cannot edit a match that is in progress");
-      return;
-    }
 
     const updatedMatch: Partial<MatchDoc> = {
       tournamentName,
@@ -252,14 +209,6 @@ const EditMatchModal = ({
             ✕
           </button>
         </div>
-
-        {isEditingRestricted && (
-          <div className="alert alert-warning mb-4">
-            <span>
-              ⚠️ Limited editing: Match is {match.status}. Player changes are restricted.
-            </span>
-          </div>
-        )}
 
         <form
           onSubmit={handleSubmit}
@@ -471,12 +420,7 @@ const EditMatchModal = ({
           <div className="w-full grid grid-rows-2 grid-cols-1 md:grid-rows-1 md:grid-cols-2 gap-4 mt-4">
             {/* Home Team Players */}
             <div className="w-full h-fit bg-base-200 rounded-lg border border-primary-content/50 flex flex-col p-2">
-              <h2 className="w-fit font-medium text-lg">
-                Home Team Players
-                {isEditingRestricted && (
-                  <span className="text-warning text-sm ml-2">(Read-only)</span>
-                )}
-              </h2>
+              <h2 className="w-fit font-medium text-lg">Home Team Players</h2>
               <div className="grid grid-cols-6 gap-2">
                 {homeTeamPlayers.map((player, index) => (
                   <div key={player.playerID} className="col-span-6 flex gap-2">
@@ -490,7 +434,6 @@ const EditMatchModal = ({
                           PlayerName: e.target.value,
                         })
                       }
-                      disabled={isEditingRestricted}
                     />
                     <input
                       type="number"
@@ -502,7 +445,6 @@ const EditMatchModal = ({
                           PlayerJerseyNumber: Number(e.target.value),
                         })
                       }
-                      disabled={isEditingRestricted}
                     />
                     <select
                       className="select select-bordered"
@@ -510,7 +452,6 @@ const EditMatchModal = ({
                       onChange={(e) =>
                         updateHomePlayer(index, { Position: e.target.value })
                       }
-                      disabled={isEditingRestricted}
                     >
                       <option value="">Position</option>
                       <option value="Prop">Prop</option>
@@ -534,7 +475,6 @@ const EditMatchModal = ({
                           })
                         }
                         className="checkbox checkbox-sm"
-                        disabled={isEditingRestricted}
                       />
                     </label>
                     <label className="label cursor-pointer">
@@ -548,14 +488,12 @@ const EditMatchModal = ({
                           })
                         }
                         className="checkbox checkbox-sm"
-                        disabled={isEditingRestricted}
                       />
                     </label>
                     <button
                       type="button"
                       className="btn btn-error btn-sm btn-square flex flex-col items-center justify-center"
                       onClick={() => removeHomePlayer(index)}
-                      disabled={isEditingRestricted}
                     >
                       <Delete className="size-5" />
                     </button>
@@ -565,7 +503,6 @@ const EditMatchModal = ({
                   type="button"
                   className="btn btn-info col-span-6"
                   onClick={addHomePlayer}
-                  disabled={isEditingRestricted}
                 >
                   Add Player
                 </button>
@@ -574,12 +511,7 @@ const EditMatchModal = ({
 
             {/* Away Team Players */}
             <div className="w-full h-fit bg-base-200 rounded-lg border border-primary-content/50 flex flex-col p-2">
-              <h2 className="w-fit font-medium text-lg">
-                Away Team Players
-                {isEditingRestricted && (
-                  <span className="text-warning text-sm ml-2">(Read-only)</span>
-                )}
-              </h2>
+              <h2 className="w-fit font-medium text-lg">Away Team Players</h2>
               <div className="grid grid-cols-6 gap-2">
                 {awayTeamPlayers.map((player, index) => (
                   <div key={player.playerID} className="col-span-6 flex gap-2">
@@ -593,7 +525,6 @@ const EditMatchModal = ({
                           PlayerName: e.target.value,
                         })
                       }
-                      disabled={isEditingRestricted}
                     />
                     <input
                       type="number"
@@ -605,7 +536,6 @@ const EditMatchModal = ({
                           PlayerJerseyNumber: Number(e.target.value),
                         })
                       }
-                      disabled={isEditingRestricted}
                     />
                     <select
                       className="select select-bordered"
@@ -613,7 +543,6 @@ const EditMatchModal = ({
                       onChange={(e) =>
                         updateAwayPlayer(index, { Position: e.target.value })
                       }
-                      disabled={isEditingRestricted}
                     >
                       <option value="">Position</option>
                       <option value="Prop">Prop</option>
@@ -637,7 +566,6 @@ const EditMatchModal = ({
                           })
                         }
                         className="checkbox checkbox-sm"
-                        disabled={isEditingRestricted}
                       />
                     </label>
                     <label className="label cursor-pointer">
@@ -651,7 +579,6 @@ const EditMatchModal = ({
                           })
                         }
                         className="checkbox checkbox-sm"
-                        disabled={isEditingRestricted}
                       />
                     </label>
 
@@ -659,7 +586,6 @@ const EditMatchModal = ({
                       type="button"
                       className="btn btn-error btn-sm btn-square flex flex-col items-center justify-center"
                       onClick={() => removeAwayPlayer(index)}
-                      disabled={isEditingRestricted}
                     >
                       <Delete className="size-5" />
                     </button>
@@ -669,7 +595,6 @@ const EditMatchModal = ({
                   type="button"
                   className="btn btn-info col-span-6"
                   onClick={addAwayPlayer}
-                  disabled={isEditingRestricted}
                 >
                   Add Player
                 </button>
@@ -744,7 +669,6 @@ const EditMatchModal = ({
             <button 
               type="submit" 
               className="btn btn-primary"
-              disabled={isEditingRestricted}
             >
               Update Match
             </button>
